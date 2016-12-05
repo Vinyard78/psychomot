@@ -19,22 +19,21 @@
 				this.moyenne = moyenne;
 				this.ecartType = ecartType;
 				this.max = max;
-
 				this.coordResultat = { x : 0, y : 0};
 				this.coordMoyMax = { x : 0, y : 0};
 				this.coordMoyMin = { x : 0, y : 0};
 				this.coordMoy = { x : 0, y : 0};
+				this.coordLim = { x : 0, y : 0};
 
 			}
 
 			var data = [
-				new Examen("test1",36,36,3,50),
-				new Examen("test2",22,39,4,60),
-				new Examen("test3",17,15,2,45),
-				new Examen("test4",40,30,1,70),
-				new Examen("test5",36,35,3,84),
-				new Examen("test6",15,32,5,50),
-				new Examen("test6",15,32,5,50)
+				new Examen("test1",33,38,2,50),
+				new Examen("test2",6,10,3,60),
+				new Examen("test3",53,59,5,45),
+				new Examen("test4",5,18,4,70),
+				new Examen("test5",16,14,1.69,84),
+				new Examen("test6",34,31.4,3,50)
 			];
 
 			// Point qui se situe au milieu du canvas
@@ -43,12 +42,10 @@
 				y : canvas.height/2
 			};
 
-			const FACTOR = 250;
+			var exces = 75;
 
-			var start = {
-				x : middlePoint.x, 
-				y : middlePoint.y - FACTOR
-			};
+			// facteur d'agrandissement du diagramme
+			const FACTOR = 250;
 
 			/** 
 			 * Fonction qui permet de donner les coordonnées d'un point suivant un angle donné sur le cercle trigonométrique 
@@ -59,224 +56,94 @@
 			 * factor est le facteur d'agrandissement
 			 */
 			function convert(value, x, y, factor) {
-
-				x = typeof(x) === "number" ? x : 0;
-				y = typeof(y) === "number" ? y : 0;
-				factor = typeof(factor) === "number" ? factor : 1;
-				value = typeof(value) === "number" ? value : 0;
-
 				var result = {
 					x : x - factor * (Math.sin(value)),
 					y : y + factor * (1 - Math.cos(value))
 				};
-
 				return result;
 			}	
 
 			function pythagore(x1,y1,x2,y2){
-				x1 = typeof(x1) === "number" ? x1 : 0;
-				y1 = typeof(y1) === "number" ? y1 : 0;
-				x2 = typeof(x2) === "number" ? x2 : 0;
-				y2 = typeof(y2) === "number" ? y2 : 0;
-
 				return Math.sqrt(Math.pow(y2-y1,2)+Math.pow(x2-x1,2));
 			}
 
+			function computeCoord() {
+				for(var i = 0, length = data.length; i < length; i++ ){
 
+					// Calcul des coordonnées des points correspondants à la moyenne max.
+					var value = convert(i * 2 * Math.PI / data.length,  middlePoint.x,  middlePoint.y - FACTOR, FACTOR);
+					data[i].coordMoyMax.y = value.y;
+					data[i].coordMoyMax.x = value.x;
 
+					// Calcul des paramètres
+					var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
+					var moyMax = data[i].moyenne + data[i].ecartType;
+					var norm = rayon / moyMax;
 
+					// Calcul des coordonnées des points correspondants à la moyenne min.
+					var longueurBandeMoy = norm * data[i].ecartType * 2;
+					data[i].coordMoyMin.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+					data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 
+					// Calcul des coordonnées des points correspondants à la moyenne.
+					longueurBandeMoy = norm * data[i].ecartType;
+					data[i].coordMoy.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+					data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 
-			
+					// Calcul des coordonnées des points correspondants aux résultats.
+					var longueurDeltaRes = rayon - (norm * data[i].resultat);
+					data[i].coordResultat.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
+					data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
 
-
-
-
-
-
-
-
-
-
-
-
-
-			context.fillStyle = "rgba(23, 145, 167, 0.5)";
-			context.beginPath();
-
-			// Point de départ du tracé
-			context.moveTo(start.x, start.y);
-			data[0].coordMoyMax.x = start.x;
-			data[0].coordMoyMax.y = start.y;
-
-
-			for(var i = 1, length = data.length; i < length; i++ ){
-				var value = convert(i * 2 * Math.PI / data.length, start.x, start.y, FACTOR);
-				data[i].coordMoyMax.y = value.y;
-				data[i].coordMoyMax.x = value.x;
-				context.lineTo(value.x,value.y);
+					// Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
+					longueurDeltaRes = -exces;
+					data[i].coordLim.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
+					data[i].coordLim.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
+				}
 			}
 
-			context.closePath();
-			context.fill();
-
-
-
-
-
-
-			
-			start.x = data[0].coordMoyMax.x;
-			start.y = data[0].coordMoyMax.y + (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].ecartType * 2));
-
-			context.fillStyle = "rgba(255, 255, 255, 1)";
-
-			context.beginPath();
-
-			// Point de départ du tracé
-			context.moveTo(start.x, start.y);
-
-			data[0].coordMoyMin.x = start.x;
-			data[0].coordMoyMin.y = start.y;
-
-			for(var i = 1, length = data.length; i < length; i++ ){
-
-				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
-				var moyMax = data[i].moyenne + data[i].ecartType;
-				var norm = rayon / moyMax;
-				var longueurBandeMoy = norm * data[i].ecartType * 2;
-
-				data[i].coordMoyMin.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
-				data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
-
-				context.lineTo(data[i].coordMoyMin.x,data[i].coordMoyMin.y);
+			function drawPoints(style,prop,fill,lineWidth,cross){
+				if(fill){
+					context.fillStyle = style;
+				} else {
+					context.lineWidth = lineWidth ? lineWidth : "1";
+					context.strokeStyle = style;
+				}
+				context.beginPath();
+				context.moveTo(data[0][prop].x, data[0][prop].y);
+				if(cross){
+					context.lineTo(middlePoint.x,middlePoint.y);
+				}
+				for(var i = 1, length = data.length; i < length; i++ ){
+					if(cross){
+						context.moveTo(data[i][prop].x, data[i][prop].y);
+						context.lineTo(middlePoint.x,middlePoint.y);
+					} else {
+						context.lineTo(data[i][prop].x,data[i][prop].y);
+					}
+				}
+				context.closePath();
+				if(fill){
+					context.fill();
+				} else {
+					context.stroke();
+				}
 			}
 
-			context.closePath();
-			context.fill();
+			/**
+			 * Calcul des points
+			 */
+			computeCoord();
 
-
-
-
-
-
-
-			start.x = data[0].coordMoyMax.x;
-			start.y = data[0].coordMoyMax.y + (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].ecartType));
-
-			context.lineWidth="2";
-			context.strokeStyle = "rgba(0, 0, 0, 1)";
-
-			context.beginPath();
-
-			// Point de départ du tracé
-			context.moveTo(start.x, start.y);
-			
-			data[0].coordMoy.x = start.x;
-			data[0].coordMoy.y = start.y;
-
-			for(var i = 1, length = data.length; i < length; i++ ){
-
-				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
-				var moyMax = data[i].moyenne + data[i].ecartType;
-				var norm = rayon / moyMax;
-				var longueurBandeMoy = norm * data[i].ecartType;
-
-				data[i].coordMoy.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
-				data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
-
-				context.lineTo(data[i].coordMoy.x,data[i].coordMoy.y);
-			}
-
-			context.closePath();
-			context.stroke();
-
-
-
-
-
-
-			start.x = middlePoint.x;
-			start.y = middlePoint.y - (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].resultat));
-
-			//context.lineWidth="10";
-			context.fillStyle = "rgba(255, 0, 0, .9)";
-
-			context.beginPath();
-
-			// Point de départ du tracé
-			context.moveTo(start.x, start.y);
-			
-			data[0].coordResultat.x = start.x;
-			data[0].coordResultat.y = start.y;
-
-			for(var i = 1, length = data.length; i < length; i++ ){
-
-				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
-				var moyMax = data[i].moyenne + data[i].ecartType;
-				var norm = rayon / moyMax;
-				var longueurDeltaRes = rayon - (norm * data[i].resultat);
-
-				data[i].coordResultat.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
-				data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
-
-				context.lineTo(data[i].coordResultat.x,data[i].coordResultat.y);
-			}
-
-			context.closePath();
-			context.fill();
-
-
-
-
-
-
-
-
-
-
-
-
-			var limit = [];
-			var exces = 100;
-
-			start.x = middlePoint.x;
-			start.y = data[0].coordMoyMax.y - exces;
-
-			//context.lineWidth="10";
-			context.strokeStyle = "rgba(150, 150, 150, 1)";
-
-			context.beginPath();
-
-			// Point de départ du tracé
-			context.moveTo(start.x, start.y);
-
-			context.lineTo(middlePoint.x,middlePoint.y);
-
-			for(var i = 1, length = data.length; i < length; i++ ){
-
-				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
-				var moyMax = data[i].moyenne + data[i].ecartType;
-				var norm = rayon / moyMax;
-				var longueurDeltaRes = -exces;
-
-				var X = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
-				var Y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
-
-				context.moveTo(X,Y);
-				context.lineTo(middlePoint.x,middlePoint.y);
-			}
-
-			context.closePath();
-			context.stroke();
-
-
-
-
-
-
-
-
+			/**
+			 * Tracé des courbes
+			 */
+			drawPoints("rgba(23, 145, 167, 0.5)","coordMoyMax",true);
+			drawPoints("rgba(255, 255, 255, 1)","coordMoyMin",true);
+			drawPoints("rgba(0, 0, 200, 1)","coordMoy",false,".5");
+			drawPoints("rgba(255, 0, 0, .5)","coordResultat",true);
+			drawPoints("rgba(255, 0, 0, 1)","coordResultat",false,"2");
+			drawPoints("rgba(150, 150, 150, .5)","coordLim",false,"2",true);
 
 		</script>
 	</body>
