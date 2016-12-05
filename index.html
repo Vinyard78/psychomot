@@ -13,11 +13,12 @@
 			canvas.height = 1000;
 			var context = canvas.getContext('2d');
 
-			function Examen(nom, resultat, moyenne, ecartType) {
+			function Examen(nom, resultat, moyenne, ecartType, max) {
 				this.nom = nom;
 				this.resultat = resultat;
 				this.moyenne = moyenne;
 				this.ecartType = ecartType;
+				this.max = max;
 
 				this.coordResultat = { x : 0, y : 0};
 				this.coordMoyMax = { x : 0, y : 0};
@@ -27,12 +28,13 @@
 			}
 
 			var data = [
-				new Examen("test1",36,36,3),
-				new Examen("test2",22,39,4),
-				new Examen("test3",17,15,2),
-				new Examen("test4",40,30,1),
-				new Examen("test5",36,35,3),
-				new Examen("test6",15,32,5)
+				new Examen("test1",36,36,3,50),
+				new Examen("test2",22,39,4,60),
+				new Examen("test3",17,15,2,45),
+				new Examen("test4",40,30,1,70),
+				new Examen("test5",36,35,3,84),
+				new Examen("test6",15,32,5,50),
+				new Examen("test6",15,32,5,50)
 			];
 
 			// Point qui se situe au milieu du canvas
@@ -84,6 +86,21 @@
 
 
 
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
 			context.fillStyle = "rgba(23, 145, 167, 0.5)";
 			context.beginPath();
 
@@ -95,8 +112,8 @@
 
 			for(var i = 1, length = data.length; i < length; i++ ){
 				var value = convert(i * 2 * Math.PI / data.length, start.x, start.y, FACTOR);
-				data[i].coordMoyMax.x = value.x;
 				data[i].coordMoyMax.y = value.y;
+				data[i].coordMoyMax.x = value.x;
 				context.lineTo(value.x,value.y);
 			}
 
@@ -129,8 +146,8 @@
 				var norm = rayon / moyMax;
 				var longueurBandeMoy = norm * data[i].ecartType * 2;
 
-				data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 				data[i].coordMoyMin.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+				data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 
 				context.lineTo(data[i].coordMoyMin.x,data[i].coordMoyMin.y);
 			}
@@ -165,21 +182,14 @@
 				var norm = rayon / moyMax;
 				var longueurBandeMoy = norm * data[i].ecartType;
 
-				data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 				data[i].coordMoy.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+				data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
 
 				context.lineTo(data[i].coordMoy.x,data[i].coordMoy.y);
 			}
 
 			context.closePath();
 			context.stroke();
-
-
-
-
-
-
-
 
 
 
@@ -207,14 +217,58 @@
 				var norm = rayon / moyMax;
 				var longueurDeltaRes = rayon - (norm * data[i].resultat);
 
-				data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
 				data[i].coordResultat.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
+				data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
 
 				context.lineTo(data[i].coordResultat.x,data[i].coordResultat.y);
 			}
 
 			context.closePath();
 			context.fill();
+
+
+
+
+
+
+
+
+
+
+
+
+			var limit = [];
+			var exces = 100;
+
+			start.x = middlePoint.x;
+			start.y = data[0].coordMoyMax.y - exces;
+
+			//context.lineWidth="10";
+			context.strokeStyle = "rgba(150, 150, 150, 1)";
+
+			context.beginPath();
+
+			// Point de départ du tracé
+			context.moveTo(start.x, start.y);
+
+			context.lineTo(middlePoint.x,middlePoint.y);
+
+			for(var i = 1, length = data.length; i < length; i++ ){
+
+				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
+				var moyMax = data[i].moyenne + data[i].ecartType;
+				var norm = rayon / moyMax;
+				var longueurDeltaRes = -exces;
+
+				var X = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
+				var Y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
+
+				context.moveTo(X,Y);
+				context.lineTo(middlePoint.x,middlePoint.y);
+			}
+
+			context.closePath();
+			context.stroke();
 
 
 
