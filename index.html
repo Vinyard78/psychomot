@@ -9,8 +9,8 @@
 		</canvas>
 		<script>
 			var canvas  = document.querySelector('#canvas');
-			canvas.width = 700;
-			canvas.height = 700;
+			canvas.width = 1700;
+			canvas.height = 1700;
 			var context = canvas.getContext('2d');
 
 			function Examen(nom, resultat, moyenne, ecartType) {
@@ -18,10 +18,16 @@
 				this.resultat = resultat;
 				this.moyenne = moyenne;
 				this.ecartType = ecartType;
+
+				this.coordResultat = { x : 0, y : 0};
+				this.coordMoyMax = { x : 0, y : 0};
+				this.coordMoyMin = { x : 0, y : 0};
+				this.coordMoy = { x : 0, y : 0};
+
 			}
 
 			var data = [
-				new Examen("test1",34,40,3),
+				new Examen("test1",34,36,3),
 				new Examen("test2",22,39,4),
 				new Examen("test3",17,15,2),
 				new Examen("test4",40,30,1),
@@ -35,7 +41,7 @@
 				y : canvas.height/2
 			};
 
-			const FACTOR = 200;
+			const FACTOR = 250;
 
 			var start = {
 				x : middlePoint.x, 
@@ -65,20 +71,156 @@
 				return result;
 			}	
 
-			//context.lineWidth="2";
+			function pythagore(x1,y1,x2,y2){
+				x1 = typeof(x1) === "number" ? x1 : 0;
+				y1 = typeof(y1) === "number" ? y1 : 0;
+				x2 = typeof(x2) === "number" ? x2 : 0;
+				y2 = typeof(y2) === "number" ? y2 : 0;
+
+				return Math.sqrt(Math.pow(y2-y1,2)+Math.pow(x2-x1,2));
+			}
+
+			
+
+			
+
 			context.fillStyle = "rgba(23, 145, 167, 0.5)";
 			context.beginPath();
 
 			// Point de départ du tracé
 			context.moveTo(start.x, start.y);
+			data[0].coordMoyMax.x = start.x;
+			data[0].coordMoyMax.y = start.y;
 
-			for(var i = 0, length = data.length; i < length; i++ ){
+
+			for(var i = 1, length = data.length; i < length; i++ ){
 				var value = convert(i * 2 * Math.PI / data.length, start.x, start.y, FACTOR);
+				data[i].coordMoyMax.x = value.x;
+				data[i].coordMoyMax.y = value.y;
 				context.lineTo(value.x,value.y);
 			}
 
 			context.closePath();
 			context.fill();
+
+
+
+
+
+
+			
+			start.x = data[0].coordMoyMax.x;
+			start.y = data[0].coordMoyMax.y + (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].ecartType * 2));
+
+			context.fillStyle = "rgba(255, 255, 255, 1)";
+
+			context.beginPath();
+
+			// Point de départ du tracé
+			context.moveTo(start.x, start.y);
+
+			data[0].coordMoyMin.x = start.x;
+			data[0].coordMoyMin.y = start.y;
+
+			for(var i = 1, length = data.length; i < length; i++ ){
+
+				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
+				var moyMax = data[i].moyenne + data[i].ecartType;
+				var norm = rayon / moyMax;
+				var longueurBandeMoy = norm * data[i].ecartType * 2;
+
+				data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
+				data[i].coordMoyMin.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+
+				context.lineTo(data[i].coordMoyMin.x,data[i].coordMoyMin.y);
+			}
+
+			context.closePath();
+			context.fill();
+
+
+
+
+
+
+
+			start.x = data[0].coordMoyMax.x;
+			start.y = data[0].coordMoyMax.y + (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].ecartType));
+
+			context.lineWidth="2";
+			context.strokeStyle = "rgba(0, 0, 0, 1)";
+
+			context.beginPath();
+
+			// Point de départ du tracé
+			context.moveTo(start.x, start.y);
+			
+			data[0].coordMoy.x = start.x;
+			data[0].coordMoy.y = start.y;
+
+			for(var i = 1, length = data.length; i < length; i++ ){
+
+				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
+				var moyMax = data[i].moyenne + data[i].ecartType;
+				var norm = rayon / moyMax;
+				var longueurBandeMoy = norm * data[i].ecartType;
+
+				data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
+				data[i].coordMoy.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+
+				context.lineTo(data[i].coordMoy.x,data[i].coordMoy.y);
+			}
+
+			context.closePath();
+			context.stroke();
+
+
+
+
+
+
+
+
+
+
+
+
+
+			start.x = middlePoint.x;
+			start.y = middlePoint.y - (((middlePoint.y - data[0].coordMoyMax.y) / (data[0].moyenne + data[0].ecartType)) * (data[0].resultat));
+
+			//context.lineWidth="10";
+			context.fillStyle = "rgba(255, 0, 0, .9)";
+
+			context.beginPath();
+
+			// Point de départ du tracé
+			context.moveTo(start.x, start.y);
+			
+			data[0].coordResultat.x = start.x;
+			data[0].coordResultat.y = start.y;
+
+			for(var i = 1, length = data.length; i < length; i++ ){
+
+				var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
+				var moyMax = data[i].moyenne + data[i].ecartType;
+				var norm = rayon / moyMax;
+				var longueurDeltaRes = rayon - (norm * data[i].resultat);
+
+				data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
+				data[i].coordResultat.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
+
+				context.lineTo(data[i].coordResultat.x,data[i].coordResultat.y);
+			}
+
+			context.closePath();
+			context.fill();
+
+
+
+
+
+
 
 
 
