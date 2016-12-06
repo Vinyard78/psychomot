@@ -4,14 +4,20 @@
 
 	</head>
 	<body>
+		
 		<canvas id="canvas">
 		    <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
 		</canvas>
+		<a id="downloadLnk" download="diagramme.jpg">Télécharger le diagramme</a>
 		<script>
 			var canvas  = document.querySelector('#canvas');
 			canvas.width = 1000;
 			canvas.height = 1000;
 			var context = canvas.getContext('2d');
+
+			// Remplissage de l'arrière plan en blanc
+			context.fillStyle = "rgba(255, 255, 255, 1)";
+			context.fillRect(0,0,canvas.width,canvas.height);
 
 			function Examen(nom, resultat, moyenne, ecartType, max) {
 				this.nom = nom;
@@ -24,7 +30,6 @@
 				this.coordMoyMin = { x : 0, y : 0};
 				this.coordMoy = { x : 0, y : 0};
 				this.coordLim = { x : 0, y : 0};
-
 			}
 
 			var data = [
@@ -144,6 +149,20 @@
 			drawPoints("rgba(255, 0, 0, .5)","coordResultat",true);
 			drawPoints("rgba(255, 0, 0, 1)","coordResultat",false,"2");
 			drawPoints("rgba(150, 150, 150, .5)","coordLim",false,"2",true);
+
+
+
+			downloadLnk.addEventListener('click', function(){
+			    this.href = canvas.toDataURL('image/jpeg');
+			}, false);
+
+
+
+
+
+
+
+
 
 		</script>
 	</body>
