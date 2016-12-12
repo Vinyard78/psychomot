@@ -47,7 +47,8 @@
 				y : canvas.height/2
 			};
 
-			var exces = 75;
+			var maxValueArray = [];
+			var exces = 40;
 
 			// facteur d'agrandissement du diagramme
 			const FACTOR = 250;
@@ -74,36 +75,49 @@
 
 			function computeCoord() {
 				for(var i = 0, length = data.length; i < length; i++ ){
-
-					// Calcul des coordonnées des points correspondants à la moyenne max.
+					// Calcul des coordonnées des points correspondants à la moyenne.
 					var value = convert(i * 2 * Math.PI / data.length,  middlePoint.x,  middlePoint.y - FACTOR, FACTOR);
-					data[i].coordMoyMax.y = value.y;
-					data[i].coordMoyMax.x = value.x;
+					data[i].coordMoy.y = value.y;
+					data[i].coordMoy.x = value.x;
 
 					// Calcul des paramètres
-					var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoyMax.x,data[i].coordMoyMax.y);
-					var moyMax = data[i].moyenne + data[i].ecartType;
-					var norm = rayon / moyMax;
+					var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoy.x,data[i].coordMoy.y);
+					var moy = data[i].moyenne;
+					var norm = rayon / moy;
+					
+					var maxNormValue = norm * (data[i].moyenne + data[i].ecartType);
+					var minNormValue = norm * (data[i].moyenne - data[i].ecartType);
+					var resultNormValue = norm * data[i].resultat;
+
+					var longueurDeltaMax = rayon - maxNormValue; 
+					var longueurDeltaMin = rayon - minNormValue; 
+					var longueurDeltaRes = rayon - resultNormValue; 
+
+					// Utile pour le calcul des extremités
+					maxValueArray.push(maxNormValue);
+
+					// Calcul des coordonnées des points correspondants à la moyenne max.
+					data[i].coordMoyMax.x = data[i].coordMoy.x + (middlePoint.x - data[i].coordMoy.x) * longueurDeltaMax / rayon;
+					data[i].coordMoyMax.y = data[i].coordMoy.y + (middlePoint.y - data[i].coordMoy.y) * longueurDeltaMax / rayon;
 
 					// Calcul des coordonnées des points correspondants à la moyenne min.
-					var longueurBandeMoy = norm * data[i].ecartType * 2;
-					data[i].coordMoyMin.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
-					data[i].coordMoyMin.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
-
-					// Calcul des coordonnées des points correspondants à la moyenne.
-					longueurBandeMoy = norm * data[i].ecartType;
-					data[i].coordMoy.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurBandeMoy / rayon;
-					data[i].coordMoy.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurBandeMoy / rayon;
+					data[i].coordMoyMin.x = data[i].coordMoy.x + (middlePoint.x - data[i].coordMoy.x) * longueurDeltaMin / rayon;
+					data[i].coordMoyMin.y = data[i].coordMoy.y + (middlePoint.y - data[i].coordMoy.y) * longueurDeltaMin / rayon;
 
 					// Calcul des coordonnées des points correspondants aux résultats.
-					var longueurDeltaRes = rayon - (norm * data[i].resultat);
-					data[i].coordResultat.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
-					data[i].coordResultat.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
+					data[i].coordResultat.x = data[i].coordMoy.x + (middlePoint.x - data[i].coordMoy.x) * longueurDeltaRes / rayon;
+					data[i].coordResultat.y = data[i].coordMoy.y + (middlePoint.y - data[i].coordMoy.y) * longueurDeltaRes / rayon;
 
-					// Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
-					longueurDeltaRes = -exces;
-					data[i].coordLim.x = data[i].coordMoyMax.x + (middlePoint.x - data[i].coordMoyMax.x) * longueurDeltaRes / rayon;
-					data[i].coordLim.y = data[i].coordMoyMax.y + (middlePoint.y - data[i].coordMoyMax.y) * longueurDeltaRes / rayon;
+				}
+
+				// Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
+				for(var i = 0, length = data.length; i < length; i++ ){
+
+					var rayon = pythagore(middlePoint.x,middlePoint.y,data[i].coordMoy.x,data[i].coordMoy.y);
+					var longueurDeltaExt = rayon - (Math.max(...maxValueArray) + exces);
+
+					data[i].coordLim.x = data[i].coordMoy.x + (middlePoint.x - data[i].coordMoy.x) * longueurDeltaExt / rayon;
+					data[i].coordLim.y = data[i].coordMoy.y + (middlePoint.y - data[i].coordMoy.y) * longueurDeltaExt / rayon;
 				}
 			}
 
@@ -143,9 +157,9 @@
 			/**
 			 * Tracé des courbes
 			 */
-			drawPoints("rgba(23, 145, 167, 0.5)","coordMoyMax",true);
+			drawPoints("rgba(23, 145, 167, 0.3)","coordMoyMax",true);
 			drawPoints("rgba(255, 255, 255, 1)","coordMoyMin",true);
-			drawPoints("rgba(0, 0, 200, 1)","coordMoy",false,".5");
+			drawPoints("rgba(80, 0, 160, .6)","coordMoy",false,"3");
 			drawPoints("rgba(255, 0, 0, .5)","coordResultat",true);
 			drawPoints("rgba(255, 0, 0, 1)","coordResultat",false,"2");
 			drawPoints("rgba(150, 150, 150, .5)","coordLim",false,"2",true);
