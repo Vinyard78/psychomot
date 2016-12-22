@@ -37,7 +37,12 @@
   <!-- The bundle js is generated during the build process -->
   <script src="build/main.js"></script>
 
-  <script>
+    <script>
+    window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    var x=0;
+
     var canvas  = document.querySelector('#canvas'); 
     canvas.width = 1200;
     canvas.height = 1200;
@@ -95,7 +100,7 @@
 
     const RETURNHEIGHT = 30;
 
-    const MAXTEXTWIDTH = 100;
+    const MAXTEXTWIDTH = 300;
 
     /** 
      * Fonction qui permet de donner les coordonnées d'un point suivant un angle donné sur le cercle trigonométrique 
@@ -279,6 +284,7 @@
         context.lineWidth = lineWidth ? lineWidth : "1";
         context.strokeStyle = style;
       }
+
       context.beginPath();
       context.moveTo(data[0][prop].x, data[0][prop].y);
       if(cross){
@@ -298,6 +304,49 @@
       } else {
         context.stroke();
       }
+
+      
+      /*function step(timestamp) {
+        
+        if(fill){
+          context.fillStyle = style;
+        } else {
+          context.lineWidth = lineWidth ? lineWidth : "1";
+          context.strokeStyle = style;
+        }
+
+        context.beginPath();
+        context.moveTo(data[0][prop].x, data[0][prop].y);
+        if(cross){
+          context.lineTo(middlePoint.x,middlePoint.y);
+        }
+        for(var i = 1, length = data.length; i < length; i++ ){
+          if(cross){
+            context.moveTo(data[i][prop].x, data[i][prop].y);
+            context.lineTo(middlePoint.x,middlePoint.y);
+          } else {
+            context.lineTo(data[i][prop].x,data[i][prop].y);
+          }
+        }
+
+
+
+        context.closePath();clearCanvas();
+        if(fill){
+          context.fill();
+        } else {
+          context.stroke();
+        }
+
+        if (x != middlePoint.x) {
+          requestAnimationFrame(step);
+          //step();
+        }
+
+        x+=25;
+      }
+      //step();
+      requestAnimationFrame(step);*/
     }
 
     /**
@@ -359,6 +408,9 @@
       draw();
     }, false);
 
+
+
   </script>
+  
 </body>
 </html>

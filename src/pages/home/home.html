@@ -5,7 +5,8 @@
 </ion-header>
 
 <ion-content padding>
-<canvas id="canvas">
+
+  <canvas id="canvas">
     <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
   </canvas>
   <input id="inputRange" type="range" min="0" max="500" onchange="changeTextWidth(this.value)"/>
@@ -14,13 +15,11 @@
   <a id="max">MAX</a>
   <a id="min">MIN</a>
   <a id="res">RES</a>
-  <h2>Welcome to Ionic!</h2>
-  <p>
-    This starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+
+
+  <div class="examens" *ngFor="let exam of exams" >
+    {{exam.nom}}
+  </div>
+
+
 </ion-content>
