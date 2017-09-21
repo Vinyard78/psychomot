@@ -44,8 +44,8 @@
     var x=0;
 
     var canvas  = document.querySelector('#canvas'); 
-    canvas.width = 1200;
-    canvas.height = 1200;
+    canvas.width = 1500;
+    canvas.height = 1500;
     var context = canvas.getContext('2d');
 
     var type = "";
@@ -56,7 +56,36 @@
       context.fillRect(0,0,canvas.width,canvas.height);
     };
 
-    function Examen(nom, categorie, resultat, moyenne, moyenneInf, moyenneSup) {
+    var noteInverse = function(note, moy, inf, sup){
+      var div = 2;
+      var result = {};
+      result.note = inf - (note - sup);
+      result.inf = inf;
+      result.sup = sup;
+      result.moy = moy;
+      if(result.note<0){
+        result.note = 0;
+      }
+      /*function recurs(){
+        if(result.note < -0.001){
+          result.inf = inf*div;
+          result.sup = sup*div;
+          result.moy = moy*div;
+          result.note = result.inf - (note*div - result.sup);
+          div+=2;
+          if(result.note < -0.001){
+            recurs();
+          }
+        } else return;
+      }
+      recurs();*/
+      
+      return result;
+    };
+
+    var noteInversed = noteInverse(26,12.3,12.3-4.4,12.3+4.4);
+
+    function Examen(nom, categorie, resultat, moyenne, moyenneInf, moyenneSup, inverse) {
       this.nom = nom;
       this.categorie = categorie;
       this.resultat = resultat;
@@ -71,20 +100,35 @@
     }
 
     var data = [
-      /*new Examen("SOMATOGNOSIES","(schéma corporel)",16,17,17-2,17+2),
-      new Examen("BONHOMME DE GOODENOUGH","(schéma corporel)",4,6,6-2,6+2),
-      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",7,10,10-3,10+3),
-      new Examen("EMG","(coordinations globales et fines, équilibre)",5,10.5,10.5-1.25,10.5+1.25),
-      new Examen("SANTUCCI","(graphisme)",3,4,3,11),
-      new Examen("FIGURE DE REY B - COPIE","(graphisme)",10,0,0,16),
-      new Examen("FIGURE DE REY B - MÉMOIRE","(graphisme)",0,0,0,9.5)*/
-      new Examen("SOMATOGNOSIES","(schéma corporel)",36,22,22-2,22+2),
-      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",2,10,10-3,10+3),
-      new Examen("BENDER","(graphisme)",35,39,39-6,39+6),
-      new Examen("BHK","(graphisme)",5.2/*18*/,11.6,11.6-4.3,11.6+4.3),
-      new Examen("STAMBAK","(structuration temporelle)",8,15.7,15.7-3.27,15.7+3.27),
-      new Examen("BARRAGE DES CLOCHES","(attention, concentration)",27,29,29-4.2,29+4.2)
+
+      /*new Examen("BONHOMME DE GOODENOUGH","()",17,22,22-2,22+2),
+      new Examen("SOMATOGNOSIES","(schéma corporel)",1,10,10-3,10+3),
+      new Examen("CHARLOPP ATWELL","()",44,39,33,45),
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",18,30,27,32),
+      new Examen("EMG","(coordinations globales et fines, équilibre)",9.5,18,16,23),
+
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",noteInversed.note,noteInversed.moy,noteInversed.inf,noteInversed.sup),
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",7,15.87,15.87-3.15,15.87+3.15),
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",31,29,29-4.2,29+4.2),
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",3.15,1.09,1.09-1.02,1.09+1.02),
+      new Examen("M ABC 2","(coordinations globales et fines, équilibre)",0.15,0.47,0.47-0.23,0.47+0.23)*/
+
+
+
+
+       new Examen("BONHOMME DE GOODENOUGH","()",22,22,22-2,22+2),
+        new Examen("BONHOMME DE GOODENOUGH","()",8,10,10-3,10+3),
+         new Examen("BONHOMME DE GOODENOUGH","()",25,39,33,45),
+          new Examen("BONHOMME DE GOODENOUGH","()",23,30,27,32),
+           new Examen("BONHOMME DE GOODENOUGH","()",8,18,16,23),
+           new Examen("BONHOMME DE GOODENOUGH","()",6.6,12.3,12.3-4.4,12.3+4.4),
+          new Examen("BONHOMME DE GOODENOUGH","()",13,15.87,15.87-3.15,15.87+3.15),
+          new Examen("BONHOMME DE GOODENOUGH","()",29,29,29-4.2,29+4.2)
     ];
+
+
+    
+
 
     // Point qui se situe au milieu du canvas
     var middlePoint = {
@@ -197,7 +241,7 @@
         data[i].coordLim.y = data[i][typeProp].y + (middlePoint.y - data[i][typeProp].y) * deltaExt / rayon;
       }
 
-      (function drawText(returnHeight, maxTextWidth){
+      /*(function drawText(returnHeight, maxTextWidth){
         // On ne reduit la zone de texte pas au dela de la taille de 3 lettre M affichees dans la font et le style utilise
         if(maxTextWidth < context.measureText("MM").width){
           maxTextWidth = context.measureText("MM").width;
@@ -273,7 +317,7 @@
             line+=returnHeight;
           }
         }
-      })(returnHeight,maxTextWidth);
+      })(returnHeight,maxTextWidth);*/
     }
 
 
