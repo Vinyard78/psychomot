@@ -6,7 +6,7 @@
 
 <ion-content padding>
 
-  <!--<canvas id="canvas">
+  <canvas id="canvas">
     <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
   </canvas>
   <input id="inputRange" type="range" min="0" max="500" onchange="changeTextWidth(this.value)"/>
@@ -14,12 +14,12 @@
   <a id="moy">MOY</a>
   <a id="max">MAX</a>
   <a id="min">MIN</a>
-  <a id="res">RES</a>-->
+  <a id="res">RES</a>
 
-  <div class="examens" *ngFor="let exam of exams; let i = index" [ngStyle]="{'position':'absolute','width':'0px','height':'0px','border-top':'15px solid red','border-left':'15px solid transparent','border-right':'15px solid transparent','border-bottom':'15px solid transparent','transform':'rotate(' + (i+1)*360/exams.length + 'deg) translate(0%,0%) skew(0deg,0deg) scale(1,1)','top':'200px','left':'200px'}">
+ <!-- <div class="examens" *ngFor="let exam of exams; let i = index" [ngStyle]="{'position':'absolute','width':'0px','height':'0px','border-top':'15px solid red','border-left':'15px solid transparent','border-right':'15px solid transparent','border-bottom':'15px solid transparent','transform':'rotate(' + (i+1)*360/exams.length + 'deg) translate(0%,0%) skew(0deg,0deg) scale(1,1)','top':'200px','left':'200px'}">
   </div>
 
   <div class="examens" *ngFor="let exam of exams; let i = index" [ngStyle]="{'position':'absolute','width':'1px','height':'150px','border-left':'1px solid black','transform':'rotate(' + (i)*360/exams.length + 'deg) translate(0,-50%) skew(0deg,0deg) scale(1,1)','top':'200px','left':'200px'}">
-  </div>
+  </div>-->
 
 </ion-content>
