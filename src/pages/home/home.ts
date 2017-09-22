@@ -1,26 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-//import { Examen, Point } from './examen.ts';
-
-/*export class Point {
-	x:number;
-	y:number;
-}
-
-export class Examen {
-
-	nom:string;
-	categorie:string;
-	resultat:number;
-	moyenne:number;
-	moyenneInf:number;
-	moyenneSup:number;
-	coordResultat:Point;
-	coordMoyMax:Point;
-	coordMoyMin:Point;
-	coordMoy:Point;
-	coordLim:Point;
-}
+import { Examen } from './examen';
+import { Point } from './point';
 
 /*const EXAMENS: Examen[] = [
     {nom:"SOMATOGNOSIES",categorie:"(schéma corporel)",resultat:16,moyenne:17,moyenneInf:17-2,moyenneSup:17+2,coordResultat:{ x:0, y:0 },coordMoyMax:{ x:0, y:0 },coordMoyMin:{ x:0, y:0 },coordMoy:{ x:0, y:0 },coordLim:{ x:0, y:0 }},
@@ -44,13 +25,13 @@ export class Examen {
 })
 export class HomePage {
 
-	/*canvas: any;
+	canvas: any;
 	context: any;
 	type: string;
-	data: any[];
+	data: Examen[];
 
 	// Point qui se situe au milieu du canvas
-    middlePoint: any;
+    middlePoint: Point;
 
     // Valeur de dépassement des lignes qui se croisent au milieu
     const EXCES = 60;
@@ -81,7 +62,7 @@ export class HomePage {
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",3.15,1.09,1.09-1.02,1.09+1.02),
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",0.15,0.47,0.47-0.23,0.47+0.23)*/
 
-	        /*new Examen("BONHOMME DE GOODENOUGH","()",22,22,22-2,22+2),
+	        new Examen("BONHOMME DE GOODENOUGH","()",22,22,22-2,22+2),
 	        new Examen("BONHOMME DE GOODENOUGH","()",8,10,10-3,10+3),
 	        new Examen("BONHOMME DE GOODENOUGH","()",25,39,33,45),
 	        new Examen("BONHOMME DE GOODENOUGH","()",23,30,27,32),
@@ -94,7 +75,15 @@ export class HomePage {
       		x : this.canvas.width/2,
       		y : this.canvas.height/2
     	};
-  	}
+
+        /**
+         * Calcul des points
+         */
+        this.clearCanvas();
+        this.type = "MAX"; 
+        this.computeCoord(this.RETURNHEIGHT,this.MAXTEXTWIDTH);
+        this.draw();
+    }
 
     // Fonction qui efface le contenu du canvas pour tout mettre en blanc
     clearCanvas(): void {
@@ -140,7 +129,7 @@ export class HomePage {
      * value est l'angle (ex: Math.PI/4)
      * factor est le facteur d'agrandissement
      */
-    /*convert(value: number, x: number, y:number, factor:number): Object {
+    convert(value: number, x: number, y:number, factor:number): Point {
         let result = {
         	x : x - factor * (Math.sin(value)),
         	y : y + factor * (1 - Math.cos(value))
@@ -151,12 +140,12 @@ export class HomePage {
     /* Permet via Pythagore de calculer l'hypothénuse d'un triangle rectangle dont les coordonnées des points sont 
        {(x1,y1),(x1,y2),(x2,y2)}. Cela nous donnera la valeur de la longueur du segment [(x1,y1),(x2,y2)]
     */
-    /*pythagore(x1:number,y1:number,x2:number,y2:number): number {
+    pythagore(x1:number,y1:number,x2:number,y2:number): number {
       	return Math.sqrt(Math.pow(y2-y1,2)+Math.pow(x2-x1,2));
     }
 
     /* fonction qui permet de calculer les coordonnees des points sur le cercle trigo en fonction de sa distance sur le rayon par rapport au point de reference du cercle */
-    /*calcCoord(point: any, delta: number, index: number, typeProp: string): void {
+    calcCoord(point: any, delta: number, index: number, typeProp: string, rayon: number): void {
         point.x = this.data[index][typeProp].x + (this.middlePoint.x - this.data[index][typeProp].x) * delta / rayon;
         point.y = this.data[index][typeProp].y + (this.middlePoint.y - this.data[index][typeProp].y) * delta / rayon;
     }
@@ -173,7 +162,7 @@ export class HomePage {
 
 	    /* Permet de definir les données à utiliser pour créer la figure géométrique de référence, suivant les résultats il sera plus judicieux d'utiliser telle ou telle autre représentation
 	    */
-	    /*switch(this.type){
+	    switch(this.type){
 	    	case "MOY": typeProp = 'coordMoy'; denomProp = 'moyenne'; break;
 	        case "MIN": typeProp = 'coordMoyMin'; denomProp = 'moyenneInf'; break;
 	        case "MAX": typeProp = 'coordMoyMax'; denomProp = 'moyenneSup'; break;
@@ -195,7 +184,7 @@ export class HomePage {
 	        /**
 	         * Calcul des paramètres
 	         */ 
-	        /*let rayon = this.pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);  //longueur en pixel du rayon du cercle trigo
+	        let rayon = this.pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);  //longueur en pixel du rayon du cercle trigo
 	        let norm = rayon / this.data[i][denomProp];            //nombre de pixel pour 1 unite de resultat/moyenne/...
 	        if(this.data[i][denomProp] == 0) norm = 0;
 	        let maxPixelValue = norm * this.data[i].moyenneSup;    //nombre de pixel correspondant à la valeur moyenne sup.
@@ -211,27 +200,27 @@ export class HomePage {
 	        maxValueArray.push(maxPixelValue);
 
 	        // Calcul des coordonnées des points correspondants à la moyenne.
-	        this.calcCoord(this.data[i].coordMoy, deltaMoy, i, typeProp);
+	        this.calcCoord(this.data[i].coordMoy, deltaMoy, i, typeProp, rayon);
 	        // Calcul des coordonnées des points correspondants à la moyenne max.
-	        this.calcCoord(this.data[i].coordMoyMax, deltaMax, i, typeProp);
+	        this.calcCoord(this.data[i].coordMoyMax, deltaMax, i, typeProp, rayon);
 	        // Calcul des coordonnées des points correspondants à la moyenne min.
-	        this.calcCoord(this.data[i].coordMoyMin, deltaMin, i, typeProp);
+	        this.calcCoord(this.data[i].coordMoyMin, deltaMin, i, typeProp, rayon);
 	        // Calcul des coordonnées des points correspondants aux résultats.
-	        this.calcCoord(this.data[i].coordResultat, deltaRes, i, typeProp);
+	        this.calcCoord(this.data[i].coordResultat, deltaRes, i, typeProp, rayon);
 	    }
 
-      // Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
-      for(var i = 0, length = this.data.length; i < length; i++ ){
-        var rayon = pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);
-        var deltaExt = rayon - (Math.max(...maxValueArray) + this.EXCES);
-        this.data[i].coordLim.x = this.data[i][typeProp].x + (this.middlePoint.x - this.data[i][typeProp].x) * deltaExt / rayon;
-        this.data[i].coordLim.y = this.data[i][typeProp].y + (this.middlePoint.y - this.data[i][typeProp].y) * deltaExt / rayon;
-      }
+        // Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
+        for(let i = 0, length = this.data.length; i < length; i++ ){
+            var rayon = this.pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);
+            var deltaExt = rayon - (Math.max(...maxValueArray) + this.EXCES);
+            this.data[i].coordLim.x = this.data[i][typeProp].x + (this.middlePoint.x - this.data[i][typeProp].x) * deltaExt / rayon;
+            this.data[i].coordLim.y = this.data[i][typeProp].y + (this.middlePoint.y - this.data[i][typeProp].y) * deltaExt / rayon;
+        }
 
-      /*(function drawText(returnHeight, maxTextWidth){
+        /*(function drawText(returnHeight, maxTextWidth){
         // On ne reduit la zone de texte pas au dela de la taille de 3 lettre M affichees dans la font et le style utilise
-        if(maxTextWidth < context.measureText("MM").width){
-          maxTextWidth = context.measureText("MM").width;
+        if(maxTextWidth < this.context.measureText("MM").width){
+          maxTextWidth = this.context.measureText("MM").width;
         }
 
         deltaExt-=75;
@@ -253,7 +242,7 @@ export class HomePage {
           (function cut(str){
             isTextPushed = false;
             text1 = str;
-            textWidth = context.measureText(text1).width;
+            textWidth = this.context.measureText(text1).width;
             if (textWidth > maxTextWidth) {
               if(text1.search(/ /) != -1){
                 text1 = text1.split(" ");
@@ -272,7 +261,7 @@ export class HomePage {
             }
             if(!isTextPushed){
               textArray.push(text1);
-              if(context.measureText(text2).width > maxTextWidth){
+              if(this.context.measureText(text2).width > maxTextWidth){
                 var textTemp = text2;
                 text2 = "";
                 cut(textTemp);
@@ -284,116 +273,89 @@ export class HomePage {
             return;
           })(text);
           
-          textWidth = context.measureText(textArray[0]).width;
+          textWidth = this.context.measureText(textArray[0]).width;
           middleText = textWidth/2;
 
-          context.fillText(
+          this.context.fillText(
             textArray[0], 
-            - middleText + data[i][typeProp].x + (middlePoint.x - data[i][typeProp].x) * deltaExt / rayon, 
-            data[i][typeProp].y + (middlePoint.y - data[i][typeProp].y) * deltaExt / rayon
+            - middleText + this.data[i][typeProp].x + (this.middlePoint.x - this.data[i][typeProp].x) * deltaExt / rayon, 
+            this.data[i][typeProp].y + (this.middlePoint.y - this.data[i][typeProp].y) * deltaExt / rayon
           );
 
           var line = returnHeight;
 
           for(var j = 1; j < textArray.length; j++){
-            context.fillText(
+            this.context.fillText(
               textArray[j], 
-              - middleText + data[i][typeProp].x + (middlePoint.x - data[i][typeProp].x) * deltaExt / rayon, 
-              line + data[i][typeProp].y + (middlePoint.y - data[i][typeProp].y) * deltaExt / rayon
+              - middleText + data[i][typeProp].x + (this.middlePoint.x - this.data[i][typeProp].x) * deltaExt / rayon, 
+              line + this.data[i][typeProp].y + (this.middlePoint.y - this.data[i][typeProp].y) * deltaExt / rayon
             );
             line+=returnHeight;
           }
         }
-      })(returnHeight,maxTextWidth);*/
-    /*}
+        })(returnHeight,maxTextWidth);*/
+    }
 
 
-    function drawPoints(style,prop,fill,lineWidth,cross){
-      if(fill){
-       this.context.fillStyle = style;
-      } else {
-        this.context.lineWidth = lineWidth ? lineWidth : "1";
-        this.context.strokeStyle = style;
-      }
-      this.context.beginPath();
-      this.context.moveTo(this.data[0][prop].x, this.data[0][prop].y);
-      if(cross){
-        this.context.lineTo(this.middlePoint.xthis.,middlePoint.y);
-      }
-      for(let i = 1, length = this.data.length; i < length; i++ ){
-        if(cross){
-          this.context.moveTo(this.data[i][prop].x, this.data[i][prop].y);
-          this.context.lineTo(this.middlePoint.x,this.middlePoint.y);
+    drawPoints(style:string, prop:string, fill:boolean, lineWidth:string, cross:boolean): void {
+        if(fill){
+            this.context.fillStyle = style;
         } else {
-          this.context.lineTo(this.data[i][prop].x,this.data[i][prop].y);
+            this.context.lineWidth = lineWidth ? lineWidth : "1";
+            this.context.strokeStyle = style;
         }
-      }
-      this.context.closePath();
-      if(fill){
-        this.context.fill();
-      } else {
-        this.context.stroke();
-      }
+        this.context.beginPath();
+        this.context.moveTo(this.data[0][prop].x, this.data[0][prop].y);
+        if(cross){
+            this.context.lineTo(this.middlePoint.x,this.middlePoint.y);
+        }
+        for(let i = 1, length = this.data.length; i < length; i++ ){
+            if(cross){
+                this.context.moveTo(this.data[i][prop].x, this.data[i][prop].y);
+                this.context.lineTo(this.middlePoint.x,this.middlePoint.y);
+            } else {
+                this.context.lineTo(this.data[i][prop].x,this.data[i][prop].y);
+            }
+        }
+        this.context.closePath();
+        if(fill){
+            this.context.fill();
+        } else {
+            this.context.stroke();
+        }
     }
 
     /**
      * Tracé des courbes
      */
-    /*function draw(){
-      drawPoints("rgba(23, 145, 167, 0.3)","coordMoyMax",true);
-      drawPoints("rgba(255, 255, 255, 1)","coordMoyMin",true);
-      drawPoints("rgba(255, 0, 0, .5)","coordResultat",true);
-      drawPoints("rgba(150, 150, 150, .5)","coordLim",false,"2",true);
-      drawPoints("rgba(255, 0, 0, 1)","coordResultat",false,"2");
-      drawPoints("rgba(80, 0, 160, .6)","coordMoy",false,"3");
+    draw(): void {
+        this.drawPoints("rgba(23, 145, 167, 0.3)","coordMoyMax",true,"",false);
+        this.drawPoints("rgba(255, 255, 255, 1)","coordMoyMin",true,"",false);
+        this.drawPoints("rgba(255, 0, 0, .5)","coordResultat",true,"",false);
+        this.drawPoints("rgba(150, 150, 150, .5)","coordLim",false,"2",true);
+        this.drawPoints("rgba(255, 0, 0, 1)","coordResultat",false,"2",false);
+        this.drawPoints("rgba(80, 0, 160, .6)","coordMoy",false,"3",false);
     }
 
-    /**
-     * Calcul des points
-     */
-    /*this.clearCanvas();
-    this.type = "MAX"; 
-    computeCoord(RETURNHEIGHT,MAXTEXTWIDTH);
-    draw();
+    changeTextWidth(val:number): void {
+        this.clearCanvas();
+        this.computeCoord(this.RETURNHEIGHT,val);
+        this.draw();
+    }
 
-    function changeTextWidth(val){
-      this.clearCanvas();
-      computeCoord(RETURNHEIGHT,val);
-      draw();
+    onClick(type:string):void {
+        this.clearCanvas();
+        this.type = type; 
+        this.computeCoord(this.RETURNHEIGHT, this.MAXTEXTWIDTH);
+        this.draw();
     }
     
+    /*downloadDiag(): void {
+        this.href = this.canvas.toDataURL('image/jpeg');
+    }
     // Bouton de telechargement du diagramme en jpeg
     downloadLnk.addEventListener('click', function(){
         this.href = this.canvas.toDataURL('image/jpeg');
-    }, false);
-
-    moy.addEventListener('click', function(){
-      this.clearCanvas();
-      this.type = "MOY"; 
-      computeCoord(RETURNHEIGHT, MAXTEXTWIDTH);
-      draw();
-    }, false);
-
-    max.addEventListener('click', function(){
-      this.clearCanvas();
-      this.type = "MAX"; 
-      computeCoord(RETURNHEIGHT, MAXTEXTWIDTH);
-      draw();
-    }, false);
-
-    min.addEventListener('click', function(){
-      this.clearCanvas();
-      this.type = "MIN";
-      computeCoord(RETURNHEIGHT, MAXTEXTWIDTH);
-      draw();
-    }, false);
-
-    res.addEventListener('click', function(){
-      this.clearCanvas();
-      this.type = "RES";
-      computeCoord(RETURNHEIGHT, MAXTEXTWIDTH);
-      draw();
     }, false);*/
-
 
 }

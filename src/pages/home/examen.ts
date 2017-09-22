@@ -1,12 +1,4 @@
-/*export class Point {
-      x: number;
-      y: number;
-
-      constructor(x:number) {
-            this.x = x;
-            this.y = y;
-      }
-}
+import { Point } from './Point';
 
 export class Examen {
 
@@ -35,4 +27,4 @@ export class Examen {
             this.coordMoy = { x : 0, y : 0};
             this.coordLim = { x : 0, y : 0};
       }
-}*/
+}
