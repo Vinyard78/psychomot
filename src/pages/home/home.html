@@ -6,15 +6,15 @@
 
 <ion-content padding>
 
-  <canvas id="canvas">
+  <canvas #canvas>
     <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
   </canvas>
   <input id="inputRange" type="range" min="0" max="500" onchange="changeTextWidth(this.value)"/>
   <a  [href]="canvas.toDataURL('image/jpeg')" download="diagramme.jpg">Télécharger le diagramme</a>
-  <a (click)="onclick('MOY')">MOY</a>
-  <a (click)="onclick('MAX')">MAX</a>
-  <a (click)="onclick('MIN')">MIN</a>
-  <a (click)="onclick('RES')">RES</a>
+  <a (click)="onClick('MOY')">MOY</a>
+  <a (click)="onClick('MAX')">MAX</a>
+  <a (click)="onClick('MIN')">MIN</a>
+  <a (click)="onClick('RES')">RES</a>
 
  <!-- <div class="examens" *ngFor="let exam of exams; let i = index" [ngStyle]="{'position':'absolute','width':'0px','height':'0px','border-top':'15px solid red','border-left':'15px solid transparent','border-right':'15px solid transparent','border-bottom':'15px solid transparent','transform':'rotate(' + (i+1)*360/exams.length + 'deg) translate(0%,0%) skew(0deg,0deg) scale(1,1)','top':'200px','left':'200px'}">
   </div>

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Examen } from './examen';
 import { Point } from './point';
+import { DrawSettings } from './drawSettings';
 
 /*const EXAMENS: Examen[] = [
     {nom:"SOMATOGNOSIES",categorie:"(schéma corporel)",resultat:16,moyenne:17,moyenneInf:17-2,moyenneSup:17+2,coordResultat:{ x:0, y:0 },coordMoyMax:{ x:0, y:0 },coordMoyMin:{ x:0, y:0 },coordMoy:{ x:0, y:0 },coordLim:{ x:0, y:0 }},
@@ -29,24 +30,18 @@ export class HomePage {
 	context: any;
 	type: string;
 	data: Examen[];
+    @ViewChild('canvas') canvasElement: any;
 
 	// Point qui se situe au milieu du canvas
     middlePoint: Point;
 
-    // Valeur de dépassement des lignes qui se croisent au milieu
-    const EXCES = 60;
-
-    // facteur d'agrandissement du diagramme
-    const FACTOR = 250;
-    const RETURNHEIGHT = 30;
-    const MAXTEXTWIDTH = 100;
-
 	constructor(public navCtrl: NavController) {
-		this.canvas = document.querySelector('#canvas'); 
-   		this.context = this.canvas.getContext('2d');
   	}
 
-  	OnInit() {
+  	ionViewDidLoad() {
+        this.canvas = this.canvasElement.nativeElement;
+        this.context = this.canvas.getContext('2d');
+        console.dir(this.context);
   		this.canvas.width = 1500;
    		this.canvas.height = 1500;
    		this.data = [
@@ -81,7 +76,7 @@ export class HomePage {
          */
         this.clearCanvas();
         this.type = "MAX"; 
-        this.computeCoord(this.RETURNHEIGHT,this.MAXTEXTWIDTH);
+        this.computeCoord(DrawSettings.RETURNHEIGHT,DrawSettings.MAXTEXTWIDTH);
         this.draw();
     }
 
@@ -178,7 +173,7 @@ export class HomePage {
      
       	for(let i = 0, length = this.data.length; i < length; i++ ){
 	        // Calcul des coordonnées des points de la figure geomertique de base.
-	        let value = this.convert(i * 2 * Math.PI / this.data.length,  this.middlePoint.x,  this.middlePoint.y - this.FACTOR, this.FACTOR);
+	        let value = this.convert(i * 2 * Math.PI / this.data.length,  this.middlePoint.x,  this.middlePoint.y - DrawSettings.FACTOR, DrawSettings.FACTOR);
 	        this.data[i][typeProp].y = value.y;
 	        this.data[i][typeProp].x = value.x;
 	        /**
@@ -212,7 +207,7 @@ export class HomePage {
         // Calcul des coordonnées des points correspondants aux extrémités des lignes qui se croisent en leur centre.
         for(let i = 0, length = this.data.length; i < length; i++ ){
             var rayon = this.pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);
-            var deltaExt = rayon - (Math.max(...maxValueArray) + this.EXCES);
+            var deltaExt = rayon - (Math.max(...maxValueArray) + DrawSettings.EXCES);
             this.data[i].coordLim.x = this.data[i][typeProp].x + (this.middlePoint.x - this.data[i][typeProp].x) * deltaExt / rayon;
             this.data[i].coordLim.y = this.data[i][typeProp].y + (this.middlePoint.y - this.data[i][typeProp].y) * deltaExt / rayon;
         }
@@ -339,14 +334,14 @@ export class HomePage {
 
     changeTextWidth(val:number): void {
         this.clearCanvas();
-        this.computeCoord(this.RETURNHEIGHT,val);
+        this.computeCoord(DrawSettings.RETURNHEIGHT,val);
         this.draw();
     }
 
     onClick(type:string):void {
         this.clearCanvas();
         this.type = type; 
-        this.computeCoord(this.RETURNHEIGHT, this.MAXTEXTWIDTH);
+        this.computeCoord(DrawSettings.RETURNHEIGHT, DrawSettings.MAXTEXTWIDTH);
         this.draw();
     }
     
