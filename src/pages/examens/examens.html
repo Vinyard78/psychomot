@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Examens
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <button class="add-button" ion-button round (click)="presentExamenForm()"><ion-icon name="add"></ion-icon></button>
+  <ion-list no-lines>
+    <ion-list-header>Examens psychomoteurs</ion-list-header>
+
+    <ion-item *ngFor="let examen of examens">
+      	<ion-card>
+		  	<ion-card-header>
+		    	{{examen.nom}}
+		  	</ion-card-header>
+		  	<ion-card-content>
+		  		<p>
+		    		Résultat : <span>{{examen.resultat}}</span>
+		    	</p>
+		    	<div *ngIf="examen.ecartType">
+		    		Moyenne : <span>{{examen.moyenne}}</span> +/- <span>{{ examen.ecartType }}</span>
+		    	</div>
+		    	<div *ngIf="examen.moyenneSup">
+			    	<div>
+			    		Moyenne : <span>{{examen.moyenne}}</span>
+			    	</div>
+			    	<div>
+			    		Percentile inférieur : <span>{{ examen.moyenneInf }}</span>
+			    	</div>
+			    	<div>
+			    		Percentile supérieur : <span>{{ examen.moyenneSup }}</span>
+			    	</div>
+			    </div>
+		  	</ion-card-content>
+		</ion-card>
+    </ion-item>
+   
+  </ion-list>
+</ion-content>

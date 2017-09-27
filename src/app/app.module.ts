@@ -4,7 +4,10 @@ import { MyApp } from './app.component';
 import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
+import { ExamensPage } from '../pages/examens/examens';
+import { ExamenForm } from '../pages/examens/examenForm';
 import { TabsPage } from '../pages/tabs/tabs';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 
 @NgModule({
@@ -13,7 +16,9 @@ import { TabsPage } from '../pages/tabs/tabs';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    ExamensPage,
+    TabsPage,
+    ExamenForm
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -24,8 +29,10 @@ import { TabsPage } from '../pages/tabs/tabs';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    ExamensPage,
+    ExamenForm
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
+  providers: [SocialSharing, {provide: ErrorHandler, useClass: IonicErrorHandler}]
 })
 export class AppModule {}

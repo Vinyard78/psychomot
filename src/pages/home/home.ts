@@ -3,6 +3,8 @@ import { NavController } from 'ionic-angular';
 import { Examen } from './examen';
 import { Point } from './point';
 import { DrawSettings } from './drawSettings';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { ExamensPage } from '../examens/examens';
 
 /*const EXAMENS: Examen[] = [
     {nom:"SOMATOGNOSIES",categorie:"(schéma corporel)",resultat:16,moyenne:17,moyenneInf:17-2,moyenneSup:17+2,coordResultat:{ x:0, y:0 },coordMoyMax:{ x:0, y:0 },coordMoyMin:{ x:0, y:0 },coordMoy:{ x:0, y:0 },coordLim:{ x:0, y:0 }},
@@ -18,7 +20,7 @@ import { DrawSettings } from './drawSettings';
     new Examen("","",18,11.6,11.6-4.3,11.6+4.3),
     new Examen("","",8,15.7,15.7-3.27,15.7+3.27),
     new Examen("","",27,29,29-4.2,29+4.2)*/
-//];
+//]; 
 
 @Component({
   	selector: 'page-home',
@@ -35,13 +37,13 @@ export class HomePage {
 	// Point qui se situe au milieu du canvas
     middlePoint: Point;
 
-	constructor(public navCtrl: NavController) {
+	constructor(public navCtrl: NavController, private socialSharing: SocialSharing) {
   	}
 
   	ionViewDidLoad() {
         this.canvas = this.canvasElement.nativeElement;
         this.context = this.canvas.getContext('2d');
-        console.dir(this.context);
+        //console.dir(this.context);
   		this.canvas.width = 1500;
    		this.canvas.height = 1500;
    		this.data = [
@@ -57,14 +59,14 @@ export class HomePage {
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",3.15,1.09,1.09-1.02,1.09+1.02),
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",0.15,0.47,0.47-0.23,0.47+0.23)*/
 
-	        new Examen("BONHOMME DE GOODENOUGH","()",22,22,22-2,22+2),
-	        new Examen("BONHOMME DE GOODENOUGH","()",8,10,10-3,10+3),
-	        new Examen("BONHOMME DE GOODENOUGH","()",25,39,33,45),
-	        new Examen("BONHOMME DE GOODENOUGH","()",23,30,27,32),
-	        new Examen("BONHOMME DE GOODENOUGH","()",8,18,16,23),
-	        new Examen("BONHOMME DE GOODENOUGH","()",6.6,12.3,12.3-4.4,12.3+4.4),
-	        new Examen("BONHOMME DE GOODENOUGH","()",13,15.87,15.87-3.15,15.87+3.15),
-	        new Examen("BONHOMME DE GOODENOUGH","()",29,29,29-4.2,29+4.2)
+	        new Examen("BONHOMME DE GOODENOUGH","()",22,22,2),
+	        new Examen("BONHOMME DE GOODENOUGH","()",8,10,3),
+	        new Examen("BONHOMME DE GOODENOUGH","()",25,39,0,33,45),
+	        new Examen("BONHOMME DE GOODENOUGH","()",23,30,0,27,32),
+	        new Examen("BONHOMME DE GOODENOUGH","()",8,18,0,16,23),
+	        new Examen("BONHOMME DE GOODENOUGH","()",6.6,12.3,4.4),
+	        new Examen("BONHOMME DE GOODENOUGH","()",13,15.87,3.15),
+	        new Examen("BONHOMME DE GOODENOUGH","()",29,29,4.2)
 	    ];
 	    this.middlePoint = {
       		x : this.canvas.width/2,
@@ -84,7 +86,21 @@ export class HomePage {
     clearCanvas(): void {
     	this.context.fillStyle = "rgba(255, 255, 255, 1)";
       	this.context.fillRect(0,0,this.canvas.width,this.canvas.height);
-    };
+    }
+
+    send(): void {
+        let data = this.canvas.toDataURL('image/jpeg');
+        //window.location.href = data;
+        this.socialSharing.shareViaEmail('Diagramme', 'Diagramme', [''],[],[],data).then(() => {
+            
+        }).catch(() => {
+            
+        });
+    }
+
+    goToExamensList():void {
+        this.navCtrl.push(ExamensPage);
+    }
 
     /*var noteInverse = function(note, moy, inf, sup){
       var div = 2;
@@ -180,11 +196,21 @@ export class HomePage {
 	         * Calcul des paramètres
 	         */ 
 	        let rayon = this.pythagore(this.middlePoint.x,this.middlePoint.y,this.data[i][typeProp].x,this.data[i][typeProp].y);  //longueur en pixel du rayon du cercle trigo
-	        let norm = rayon / this.data[i][denomProp];            //nombre de pixel pour 1 unite de resultat/moyenne/...
+	        let norm = rayon / this.data[i][denomProp];        //nombre de pixel pour 1 unite de resultat/moyenne/...
+            if(typeof this.data[i][denomProp] === "undefined" && this.data[i].ecartType) {
+                norm = denomProp === "moyenneSup" ? rayon / (this.data[i].moyenne + this.data[i].ecartType) : rayon / (this.data[i].moyenne - this.data[i].ecartType);
+            }
 	        if(this.data[i][denomProp] == 0) norm = 0;
-	        let maxPixelValue = norm * this.data[i].moyenneSup;    //nombre de pixel correspondant à la valeur moyenne sup.
+            let maxPixelValue: number;                         //nombre de pixel correspondant à la valeur moyenne sup.
+            let minPixelValue: number;                         //nombre de pixel correspondant à la valeur moyenne inf.
+            if(this.data[i].ecartType) {
+                maxPixelValue = norm * (this.data[i].moyenne + this.data[i].ecartType);    
+                minPixelValue = norm * (this.data[i].moyenne - this.data[i].ecartType);    
+            } else {
+                maxPixelValue = norm * this.data[i].moyenneSup;    
+                minPixelValue = norm * this.data[i].moyenneInf;    
+            }
 	        let moyPixelValue = norm * this.data[i].moyenne;       //nombre de pixel correspondant à la valeur moyenne
-	        let minPixelValue = norm * this.data[i].moyenneInf;    //nombre de pixel correspondant à la valeur moyenne inf.
 	        let resultPixelValue = norm * this.data[i].resultat;   //nombre de pixel correspondant à la valeur resultat
 	        let deltaMoy = rayon - moyPixelValue;     //nombre de pixel correspondant à la distance entre le rayon et la valeur moyenne
 	        let deltaMax = rayon - maxPixelValue;     //nombre de pixel correspondant à la distance entre le rayon et la valeur moyenne sup.

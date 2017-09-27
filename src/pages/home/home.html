@@ -1,20 +1,35 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Home</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
 
-  <canvas #canvas>
-    <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
-  </canvas>
-  <input id="inputRange" type="range" min="0" max="500" onchange="changeTextWidth(this.value)"/>
-  <a  [href]="canvas.toDataURL('image/jpeg')" download="diagramme.jpg">Télécharger le diagramme</a>
-  <a (click)="onClick('MOY')">MOY</a>
-  <a (click)="onClick('MAX')">MAX</a>
-  <a (click)="onClick('MIN')">MIN</a>
-  <a (click)="onClick('RES')">RES</a>
+    <canvas #canvas>
+        <p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
+    </canvas>
+    <button class="examens-list-button" (click)="goToExamensList()" ion-button icon-only round outline>
+        <!--<a [href]="canvas.toDataURL('image/jpeg')" download="diagramme.jpg">-->
+            <ion-icon name="list-box"></ion-icon>
+        <!--</a>-->
+    </button>
+    <button class="download-button" (click)="send()" ion-button icon-only round outline>
+        <!--<a [href]="canvas.toDataURL('image/jpeg')" download="diagramme.jpg">-->
+            <ion-icon name="send"></ion-icon>
+        <!--</a>-->
+    </button>
+    <!--<input id="inputRange" type="range" min="0" max="500" onchange="changeTextWidth(this.value)"/>-->
+
+    <ion-fab bottom left>
+        <button ion-fab mini><ion-icon name="options"></ion-icon></button>
+        <ion-fab-list side="right">
+            <button (click)="onClick('MOY')" ion-fab>MOY</button>
+            <button (click)="onClick('MAX')" ion-fab>MAX</button>
+            <button (click)="onClick('MIN')" ion-fab>MIN</button>
+            <button (click)="onClick('RES')" ion-fab>RES</button>
+        </ion-fab-list>
+    </ion-fab>
 
  <!-- <div class="examens" *ngFor="let exam of exams; let i = index" [ngStyle]="{'position':'absolute','width':'0px','height':'0px','border-top':'15px solid red','border-left':'15px solid transparent','border-right':'15px solid transparent','border-bottom':'15px solid transparent','transform':'rotate(' + (i+1)*360/exams.length + 'deg) translate(0%,0%) skew(0deg,0deg) scale(1,1)','top':'200px','left':'200px'}">
   </div>
