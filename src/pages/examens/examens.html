@@ -9,7 +9,7 @@
 <ion-content>
   <button class="add-button" ion-button round (click)="presentExamenForm()"><ion-icon name="add"></ion-icon></button>
   <ion-list no-lines>
-    <ion-list-header>Examens psychomoteurs</ion-list-header>
+    <ion-list-header>Tests psychomoteurs</ion-list-header>
 
     <ion-item *ngFor="let examen of examens">
       	<ion-card>
@@ -28,10 +28,10 @@
 			    		Moyenne : <span>{{examen.moyenne}}</span>
 			    	</div>
 			    	<div>
-			    		Percentile inférieur : <span>{{ examen.moyenneInf }}</span>
+			    		Quartile inférieur : <span>{{ examen.moyenneInf }}</span>
 			    	</div>
 			    	<div>
-			    		Percentile supérieur : <span>{{ examen.moyenneSup }}</span>
+			    		Quartile supérieur : <span>{{ examen.moyenneSup }}</span>
 			    	</div>
 			    </div>
 		  	</ion-card-content>
