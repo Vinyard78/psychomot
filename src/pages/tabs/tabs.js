@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
 import { HomePage } from '../home/home';
 import { AboutPage } from '../about/about';
 import { ContactPage } from '../contact/contact';
-export var TabsPage = (function () {
+var TabsPage = (function () {
     function TabsPage() {
         // this tells the tabs component which Pages
         // should be each tab's root Page
@@ -19,12 +19,13 @@ export var TabsPage = (function () {
         this.tab2Root = AboutPage;
         this.tab3Root = ContactPage;
     }
-    TabsPage = __decorate([
-        Component({
-            templateUrl: 'tabs.html'
-        }), 
-        __metadata('design:paramtypes', [])
-    ], TabsPage);
     return TabsPage;
 }());
+TabsPage = __decorate([
+    Component({
+        templateUrl: 'tabs.html'
+    }),
+    __metadata("design:paramtypes", [])
+], TabsPage);
+export { TabsPage };
 //# sourceMappingURL=tabs.js.map

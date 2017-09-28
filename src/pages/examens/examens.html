@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Examens
+      Tests
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -11,8 +11,10 @@
   <ion-list no-lines>
     <ion-list-header>Tests psychomoteurs</ion-list-header>
 
-    <ion-item *ngFor="let examen of examens">
+    <ion-item *ngFor="let examen of examens; let i = index">
       	<ion-card>
+      		<button class="remove-button" ion-button round clear small (click)="remove(i)"><ion-icon name="close-circle"></ion-icon></button>
+      		<button class="modify-button" ion-button round clear (click)="modify(i)"><ion-icon name="create"></ion-icon></button>
 		  	<ion-card-header>
 		    	{{examen.nom}}
 		  	</ion-card-header>

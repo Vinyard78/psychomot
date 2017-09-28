@@ -8,19 +8,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
-var AboutPage = (function () {
-    function AboutPage(navCtrl) {
+import { NavController, ViewController } from 'ionic-angular';
+var ExamenForm = (function () {
+    function ExamenForm(navCtrl, viewCtrl) {
         this.navCtrl = navCtrl;
+        this.viewCtrl = viewCtrl;
+        this.examType = "ecart";
     }
-    return AboutPage;
+    ExamenForm.prototype.dismiss = function () {
+        this.viewCtrl.dismiss();
+    };
+    return ExamenForm;
 }());
-AboutPage = __decorate([
+ExamenForm = __decorate([
     Component({
-        selector: 'page-about',
-        templateUrl: 'about.html'
+        selector: 'examen-form',
+        templateUrl: 'examenForm.html'
     }),
-    __metadata("design:paramtypes", [NavController])
-], AboutPage);
-export { AboutPage };
-//# sourceMappingURL=about.js.map
+    __metadata("design:paramtypes", [NavController, ViewController])
+], ExamenForm);
+export { ExamenForm };
+//# sourceMappingURL=examenForm.js.map

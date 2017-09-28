@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 import { TabsPage } from '../pages/tabs/tabs';
-export var MyApp = (function () {
+var MyApp = (function () {
     function MyApp(platform) {
         this.rootPage = TabsPage;
         platform.ready().then(function () {
@@ -21,12 +21,13 @@ export var MyApp = (function () {
             Splashscreen.hide();
         });
     }
-    MyApp = __decorate([
-        Component({
-            templateUrl: 'app.html'
-        }), 
-        __metadata('design:paramtypes', [Platform])
-    ], MyApp);
     return MyApp;
 }());
+MyApp = __decorate([
+    Component({
+        templateUrl: 'app.html'
+    }),
+    __metadata("design:paramtypes", [Platform])
+], MyApp);
+export { MyApp };
 //# sourceMappingURL=app.component.js.map

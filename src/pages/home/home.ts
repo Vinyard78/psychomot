@@ -5,6 +5,7 @@ import { Point } from './point';
 import { DrawSettings } from './drawSettings';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ExamensPage } from '../examens/examens';
+import { ExamensService } from '../examens/examens.service';
 
 /*const EXAMENS: Examen[] = [
     {nom:"SOMATOGNOSIES",categorie:"(schéma corporel)",resultat:16,moyenne:17,moyenneInf:17-2,moyenneSup:17+2,coordResultat:{ x:0, y:0 },coordMoyMax:{ x:0, y:0 },coordMoyMin:{ x:0, y:0 },coordMoy:{ x:0, y:0 },coordLim:{ x:0, y:0 }},
@@ -37,18 +38,17 @@ export class HomePage {
 	// Point qui se situe au milieu du canvas
     middlePoint: Point;
 
-	constructor(public navCtrl: NavController, private socialSharing: SocialSharing) {
+	constructor(public navCtrl: NavController, private socialSharing: SocialSharing, private examensService: ExamensService) {
   	}
 
-  	ionViewDidLoad() {
+  	ionViewDidEnter() {
         this.canvas = this.canvasElement.nativeElement;
         this.context = this.canvas.getContext('2d');
-        //console.dir(this.context);
   		this.canvas.width = 1500;
    		this.canvas.height = 1500;
-   		this.data = [
-
-	      	/*new Examen("BONHOMME DE GOODENOUGH","()",17,22,22-2,22+2),
+   		this.data = this.examensService.getExamens();
+        /*[
+	      	new Examen("BONHOMME DE GOODENOUGH","()",17,22,22-2,22+2),
 	      	new Examen("SOMATOGNOSIES","(schéma corporel)",1,10,10-3,10+3),
 	      	new Examen("CHARLOPP ATWELL","()",44,39,33,45),
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",18,30,27,32),
@@ -57,7 +57,7 @@ export class HomePage {
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",7,15.87,15.87-3.15,15.87+3.15),
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",31,29,29-4.2,29+4.2),
 	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",3.15,1.09,1.09-1.02,1.09+1.02),
-	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",0.15,0.47,0.47-0.23,0.47+0.23)*/
+	      	new Examen("M ABC 2","(coordinations globales et fines, équilibre)",0.15,0.47,0.47-0.23,0.47+0.23)
 
 	        new Examen("BONHOMME DE GOODENOUGH","()",22,22,2),
 	        new Examen("BONHOMME DE GOODENOUGH","()",8,10,3),
@@ -67,7 +67,7 @@ export class HomePage {
 	        new Examen("BONHOMME DE GOODENOUGH","()",6.6,12.3,4.4),
 	        new Examen("BONHOMME DE GOODENOUGH","()",13,15.87,3.15),
 	        new Examen("BONHOMME DE GOODENOUGH","()",29,29,4.2)
-	    ];
+	    ];*/
 	    this.middlePoint = {
       		x : this.canvas.width/2,
       		y : this.canvas.height/2
@@ -76,10 +76,12 @@ export class HomePage {
         /**
          * Calcul des points
          */
-        this.clearCanvas();
-        this.type = "MAX"; 
-        this.computeCoord(DrawSettings.RETURNHEIGHT,DrawSettings.MAXTEXTWIDTH);
-        this.draw();
+        if(this.data.length){
+            this.clearCanvas();
+            this.type = "MAX"; 
+            this.computeCoord(DrawSettings.RETURNHEIGHT,DrawSettings.MAXTEXTWIDTH);
+            this.draw();
+        }
     }
 
     // Fonction qui efface le contenu du canvas pour tout mettre en blanc

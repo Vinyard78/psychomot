@@ -1,3 +1,11 @@
 examen-form {
-	
+	.wrapper-create-button {
+		position:fixed;
+		width:100%;
+		bottom:0;
+		z-index:1;
+		button {
+			border-radius: .5rem;
+		}
+	}
 }

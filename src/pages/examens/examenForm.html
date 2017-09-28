@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     	<ion-title>
-      		Examen
+      		Test
     	</ion-title>
     	<ion-buttons start>
       		<button ion-button (click)="dismiss()">
@@ -11,7 +11,82 @@
   	</ion-toolbar>
 </ion-header>
 <ion-content>
-  	<ion-list>
-      
-  	</ion-list>
+
+    <div padding>
+        <ion-segment [(ngModel)]="examType">
+            <ion-segment-button value="ecart">
+                Avec écart-type
+            </ion-segment-button>
+            <ion-segment-button value="quartile">
+                Avec quartiles
+            </ion-segment-button>
+        </ion-segment>
+    </div>
+
+    <div [ngSwitch]="examType">
+      	<ion-list *ngSwitchCase="'ecart'">
+
+            <ion-item>
+                <ion-label color="primary" floating>Nom du test</ion-label>
+                <ion-input [(ngModel)]="examInputs.nom" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Résultat du test</ion-label>
+                <ion-input [(ngModel)]="examInputs.resultat" type="number" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Moyenne</ion-label>
+                <ion-input [(ngModel)]="examInputs.moyenne" type="number" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Ecart type</ion-label>
+                <ion-input [(ngModel)]="examInputs.ecartType" type="number" clearInput></ion-input>
+            </ion-item>
+
+        </ion-list>
+
+        <ion-list *ngSwitchCase="'quartile'">
+
+            <ion-item>
+                <ion-label color="primary" floating>Nom du test</ion-label>
+                <ion-input [(ngModel)]="examInputs.nom" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Résultat du test</ion-label>
+                <ion-input [(ngModel)]="examInputs.resultat" type="number" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Moyenne</ion-label>
+                <ion-input [(ngModel)]="examInputs.moyenne" type="number" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Quartile inférieur</ion-label>
+                <ion-input [(ngModel)]="examInputs.quartileInf" type="number" clearInput></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary" floating>Quartile supérieur</ion-label>
+                <ion-input [(ngModel)]="examInputs.quartileSup" type="number" clearInput></ion-input>
+            </ion-item>
+
+        </ion-list>
+    </div>
+
+    
+
 </ion-content>
+
+<p padding class="wrapper-create-button">
+    <button (click)="create()" ion-button full>Create Test</button>
+</p>
+
+
+
+
+

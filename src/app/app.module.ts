@@ -8,6 +8,7 @@ import { ExamensPage } from '../pages/examens/examens';
 import { ExamenForm } from '../pages/examens/examenForm';
 import { TabsPage } from '../pages/tabs/tabs';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ExamensService } from '../pages/examens/examens.service'; 
 
 
 @NgModule({
@@ -33,6 +34,10 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     ExamensPage,
     ExamenForm
   ],
-  providers: [SocialSharing, {provide: ErrorHandler, useClass: IonicErrorHandler}]
+  providers: [
+    SocialSharing, 
+    ExamensService,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
+  ]
 })
 export class AppModule {}

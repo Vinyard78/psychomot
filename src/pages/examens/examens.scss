@@ -6,4 +6,19 @@ page-examens {
 		height:5rem;
 		width:5rem;
 	}
+
+	ion-card {
+		.remove-button {
+			position: absolute;
+    		left: 1rem;
+    		top: 1rem;
+    		padding: 2rem;
+		}
+		.modify-button {
+			position: absolute;
+			padding: 2rem;
+		    right: 3rem;
+		    bottom: 3rem;
+		}
+	}
 }
